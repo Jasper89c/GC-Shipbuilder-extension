@@ -1,59 +1,73 @@
-// 1. UI Setup - Load saved position first
+// 1. UI Setup
 chrome.storage.local.get(['panelPos'], (res) => {
     const pos = res.panelPos || { top: '20px', left: 'auto', right: '20px' };
     
     const container = document.createElement('div');
     container.id = 'gcc-preset-panel';
-    container.style.cssText = `position:fixed; top:${pos.top}; left:${pos.left}; right:${pos.right}; width:160px; background:#1a1a1a; border:2px solid #444; z-index:99999; border-radius:8px; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-family: sans-serif;`;
+    container.style.cssText = `position:fixed; top:${pos.top}; left:${pos.left}; right:${pos.right}; width:170px; background:#1a1a1a; border:2px solid #444; z-index:99999; border-radius:8px; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-family: sans-serif; color: white;`;
+    
     container.innerHTML = `
-        <div id="gcc-handle" style="background:#333; color:white; padding:8px; cursor:move; text-align:center; font-weight:bold; font-size:12px; border-bottom:1px solid #444;">⠿ DRAG HERE</div>
-        <div style="padding:10px;" id="gcc-btn-area"></div>
-        <div style="font-size:9px; color:#777; text-align:center; padding-bottom:8px;">L: Load | R: Save | Dbl: Clear</div>
+        <div id="gcc-handle" style="background:#333; padding:8px; cursor:move; text-align:center; font-weight:bold; font-size:11px; border-bottom:1px solid #444;">⠿ DRAG PANEL</div>
+        <div style="padding:8px;">
+            <div id="gcc-btn-area"></div>
+            
+            <div style="margin-top:8px; padding-top:8px; border-top:1px solid #333;">
+                <div style="font-size:10px; color:#aaa; margin-bottom:5px; text-align:center;">QUICK CLUSTER</div>
+                
+                <select id="gcc-mineral-select" style="width:100%; background:#222; color:white; border:1px solid #444; font-size:10px; margin-bottom:5px; padding:2px;">
+                    <option value="2">Red Crystal</option>
+                    <option value="6">Strafez Organism</option>
+                </select>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:2px;">
+                    <button class="cl-btn" data-tier="20" style="background:#4a148c;">L1</button>
+                    <button class="cl-btn" data-tier="21" style="background:#6a1b9a;">L2</button>
+                    <button class="cl-btn" data-tier="22" style="background:#8e24aa;">L3</button>
+                </div>
+            </div>
+        </div>
+        <div style="font-size:9px; color:#555; text-align:center; padding-bottom:6px;">L: Load | R: Save | Dbl: Clear</div>
     `;
     document.body.appendChild(container);
+
+    // Apply shared styles to cluster buttons
+    container.querySelectorAll('.cl-btn').forEach(btn => {
+        btn.style.cssText += "color:white; border:none; padding:5px 0; border-radius:3px; cursor:pointer; font-size:10px; font-weight:bold;";
+    });
 
     setupLogic(container);
 });
 
-// 2. Wrap the rest of the logic so it waits for the container to exist
 function setupLogic(container) {
     let isDragging = false;
     let offset = { x: 0, y: 0 };
-
     const handle = document.getElementById('gcc-handle');
 
+    // --- Drag Logic ---
     handle.addEventListener('mousedown', (e) => {
         isDragging = true;
         offset.x = e.clientX - container.offsetLeft;
         offset.y = e.clientY - container.offsetTop;
-        container.style.transition = 'none'; // Disable transitions while dragging
+        container.style.transition = 'none';
     });
 
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-        const newLeft = (e.clientX - offset.x);
-        const newTop = (e.clientY - offset.y);
-        
-        container.style.left = newLeft + 'px';
-        container.style.top = newTop + 'px';
+        container.style.left = (e.clientX - offset.x) + 'px';
+        container.style.top = (e.clientY - offset.y) + 'px';
         container.style.right = 'auto';
     });
 
     document.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
-            // SAVE POSITION
             chrome.storage.local.set({
-                panelPos: {
-                    top: container.style.top,
-                    left: container.style.left,
-                    right: 'auto'
-                }
+                panelPos: { top: container.style.top, left: container.style.left, right: 'auto' }
             });
         }
     });
 
-    // 3. Main Button Logic (Same as before)
+    // --- Preset Button Logic ---
     chrome.storage.local.get(['presets'], (res) => {
         const savedData = res.presets || {};
         const btnArea = document.getElementById('gcc-btn-area');
@@ -61,7 +75,7 @@ function setupLogic(container) {
         for (let i = 1; i <= 5; i++) {
             const btn = document.createElement('button');
             btn.innerText = `Preset ${i}`;
-            btn.style.cssText = `width:100%; margin:3px 0; padding:6px; cursor:pointer; border-radius:4px; border:1px solid #555; font-size:12px; background:${savedData[i] ? "#2e7d32" : "#333"}; color:white;`;
+            btn.style.cssText = `width:100%; margin:2px 0; padding:6px; cursor:pointer; border-radius:4px; border:1px solid #444; font-size:11px; background:${savedData[i] ? "#2e7d32" : "#222"}; color:white;`;
             
             btn.onclick = () => loadPreset(i);
             btn.oncontextmenu = (e) => { e.preventDefault(); savePreset(i, btn); };
@@ -69,6 +83,44 @@ function setupLogic(container) {
             btnArea.appendChild(btn);
         }
     });
+
+    // --- Cluster Button Click Logic ---
+    container.querySelectorAll('.cl-btn').forEach(btn => {
+        btn.onclick = () => {
+            const tier = btn.getAttribute('data-tier');
+            const mineral = document.getElementById('gcc-mineral-select').value;
+            const lvl = btn.innerText;
+
+            if(confirm(`Confirm: Cluster colonies into ${lvl}?`)) {
+                performCluster(tier, mineral);
+            }
+        };
+    });
+}
+
+// --- API Function ---
+async function performCluster(tierId, mineralId) {
+    const sessionMatch = document.body.innerHTML.match(/i\.cfm\?&(\d+)/);
+    if (!sessionMatch) {
+        alert("Session ID not found.");
+        return;
+    }
+    const sessionId = sessionMatch[1];
+    const url = `i.cfm?&${sessionId}&f=com_colupgrade&tid=${tierId}&con=1`;
+
+    const formData = new FormData();
+    formData.append('goodid', mineralId);
+
+    try {
+        const response = await fetch(url, { method: 'POST', body: formData });
+        if (response.ok) {
+            alert("Action sent to server. Refreshing...");
+            window.location.reload();
+        }
+    } catch (err) {
+        alert("Network error.");
+        console.error(err);
+    }
 }
 
 // Keep your savePreset, loadPreset, and clearPreset functions exactly as they were below...
