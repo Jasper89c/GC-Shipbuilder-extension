@@ -1,56 +1,53 @@
-# GC-Shipbuilder-extension
+# GC Ship Builder Presets
 
-A lightweight Chrome Extension designed for the **Galactic Conquest (GCC)** ship building page. Stop manually typing the same fleet compositions over and over. Save up to 5 custom presets and fill your build orders with a single click.
-
-
-![Preview](preview.png)
----
-
-## ✨ Features
-* **5 Save Slots:** Store different fleet builds (e.g., "Fodder Wall," "Heavy Hitters," or "Balanced").
-* **Smart Saving:** Only saves fields with numbers to keep data clean.
-* **One-Click Load:** Instantly populates the ship input boxes.
-* **Visual Indicators:** Buttons turn green when they contain saved data.
-* **Quick Clear:** Double-click a preset to wipe it and start over.
+A lightweight Chrome Extension for the Galactic Conquest ship builder. This tool allows you to save and load fleet configurations with a single click, featuring a persistent, draggable UI.
 
 ---
 
-## 🛠 Installation (How to use)
+## 🚀 Features
 
-Since this is a community-driven tool, you install it as an "Unpacked Extension":
+* **5 Preset Slots:** Store multiple fleet compositions for quick switching.
+* **Game-Reactive Logic:** Automatically triggers `input` and `change` events so the game updates fleet power and resource costs immediately.
+* **Draggable Interface:** Move the panel anywhere on your screen using the drag handle.
+* **Smart Persistence:** Remembers your saved presets and the panel's position even after refreshing the page.
+* **Visual Indicators:** Buttons change color (Green) when a preset is saved in that slot.
 
-1.  **Download:** Click the green **Code** button above and select **Download ZIP**.
-2.  **Extract:** Unzip the folder to a permanent location on your computer.
-3.  **Extensions Page:** Open Chrome and go to `chrome://extensions/`.
-4.  **Developer Mode:** Toggle **Developer mode** (top right) to **ON**.
-5.  **Load:** Click **Load unpacked** and select the folder you just extracted.
-6.  **Play:** Refresh your GCC Building Ships page!
+---
+
+## 🛠 Installation
+
+1.  **Download** or clone this repository.
+2.  Open Chrome and go to `chrome://extensions/`.
+3.  Turn on **"Developer mode"** (top right toggle).
+4.  Click **"Load unpacked"** and select the folder containing these files.
 
 ---
 
 ## 🎮 How to Use
 
-### 1. Saving a Preset
-* Type your desired ship quantities into the input boxes on the "Building Ships" page.
-* Click any **Gray** Preset button (e.g., "Preset 1").
-* The button will turn **Green**, indicating your build is now saved.
+| Action | Result |
+| :--- | :--- |
+| **Left Click** | **Load** the saved preset into the builder. |
+| **Right Click** | **Save** your current ship counts into that slot. |
+| **Double Click** | **Clear** the preset from that slot. |
+| **Drag "⠿" Handle** | Move the panel to a new location. |
 
-### 2. Loading a Preset
-* On a fresh build page, click a **Green** Preset button.
-* All saved ship quantities will instantly fill into the correct boxes.
-* *Note: The game will automatically recalculate your "Turns Used" based on the loaded numbers.*
+### Saving a Fleet
+1.  Enter your ship numbers in the game.
+2.  **Right-click** a Preset button. It will turn green.
 
-### 3. Clearing/Overwriting
-* **To Clear:** Double-click a green button. It will turn gray and erase the data.
-* **To Overwrite:** Simply clear the slot first, then click it again with your new numbers in the boxes.
-
----
-
-## 🔒 Privacy & Safety
-* **Local Only:** This extension stores data using `chrome.storage.local`. Your presets never leave your computer.
-* **No Tracking:** No analytics, no call-backs, and no interaction with your account credentials.
-* **Open Source:** Feel free to audit the `content.js` to see exactly how the data is handled.
+### Loading a Fleet
+1.  Click any green Preset button.
+2.  The script will fill the fields and update the game's calculations automatically.
 
 ---
 
-*Created for the GCC Community. Good luck out there, Commander!*
+## 📂 File Structure
+
+* `manifest.json`: Extension permissions and configuration.
+* `content.js`: Main logic for UI, dragging, and game interaction.
+
+---
+
+## ⚖️ License
+MIT License. Feel free to modify and share.
