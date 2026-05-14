@@ -5,7 +5,7 @@
   "permissions": ["storage"],
   "content_scripts": [
     {
-      "matches": ["https://gcc.wrindustries.com/*"],
+      "matches": ["https://gcc.wrindustries.com/i.cfm?f=com_ship"],
       "js": ["content.js"],
       "css": ["styles.css"]
     }
