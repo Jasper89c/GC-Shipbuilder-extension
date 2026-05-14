@@ -1,7 +1,7 @@
 # GC-Shipbuilder-extension
 
 A lightweight Chrome Extension designed for the **Galactic Conquest (GCC)** ship building page. Stop manually typing the same fleet compositions over and over. Save up to 5 custom presets and fill your build orders with a single click.
-
+![Preview](preview.png)
 ---
 
 ## ✨ Features
